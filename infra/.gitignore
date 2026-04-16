@@ -1,0 +1,35 @@
+# Local .terraform directories
+**/.terraform/*
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+!*.example
+
+# Keep lockfile reproducible
+.terraform.lock.hcl
+
+# Logs
+crash.log
+
+# Ignore overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore generated SSH keys
+*id_rsa
+*id_rsa.pub
+
+# Local environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.oci/

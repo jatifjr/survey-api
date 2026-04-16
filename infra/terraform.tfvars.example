@@ -1,0 +1,25 @@
+# Required: target compartment for all resources.
+compartment_ocid = "ocid1.compartment.oc1..replace-me"
+
+# Optional region override; if omitted, provider uses your local OCI config/environment.
+# region = "ap-batam-1"
+
+# Unified naming across VCN/subnet/security/instances.
+name_prefix = "ampere"
+
+# Required SSH public key for VM access.
+ssh_public_key = "ssh-ed25519 AAAA...replace-me"
+
+# Image selection defaults.
+ubuntu_version = "24.04"
+
+# Optional explicit API-key auth overrides (usually unnecessary with local OCI setup):
+# tenancy_ocid     = "ocid1.tenancy.oc1..replace-me"
+# user_ocid        = "ocid1.user.oc1..replace-me"
+# fingerprint      = "aa:bb:cc:dd:ee:ff:11:22:33:44:55:66:77:88:99:00"
+# private_key_path = "/path/to/oci_api_private_key.pem"
+# private_key      = <<EOF
+# -----BEGIN PRIVATE KEY-----
+# ...
+# -----END PRIVATE KEY-----
+# EOF
