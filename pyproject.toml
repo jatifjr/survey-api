@@ -1,0 +1,27 @@
+[project]
+name = "survey-api"
+version = "1.0.0"
+description = "SDKPT Survey API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.31.0",
+    "fastapi[standard]>=0.135.3",
+    "greenlet>=3.4.0",
+    "pydantic-settings>=2.13.1",
+    "sqlalchemy>=2.0.49",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.15.10",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
