@@ -88,14 +88,14 @@ In replica mode, stopping one API container should still keep the proxy endpoint
 
 ## CI Quality Gate
 
-The `API` workflow runs format, lint, and tests in GitHub Actions on every PR and on `main` pushes.
-For the intended workflow, configure repository branch protection to require the `API / Format, lint, test` check before merge.
+The `Quality` workflow runs format, lint, and tests in GitHub Actions on every PR and on pushes to `devel` and `main`.
+For the intended workflow, configure repository branch protection to require the `Quality / Format, lint, test` check before merge.
 
 ## Production Deployment (Manual)
 
 The default root `compose.yml` is used for both local and production-style manual deployment.
-A separate manual `Build` workflow can publish the API image to GitHub Container Registry as `ghcr.io/<owner>/<repo>:latest`.
-The workflow derives the image name from the current repository, builds for `linux/arm64`, and pushes after a successful run.
+A `Build` workflow can publish the API image to GitHub Container Registry as `ghcr.io/<owner>/<repo>:latest` after merges to `main` (and also supports manual runs).
+The workflow derives the image name from the current repository, builds on an ARM runner, and pushes after a successful run.
 Because this repository is currently private, pulling the published image from other environments requires GitHub authentication with access to the package.
 
 Production required env injection values:
