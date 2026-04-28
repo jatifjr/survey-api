@@ -88,13 +88,15 @@ In replica mode, stopping one API container should still keep the proxy endpoint
 
 ## CI Quality Gate
 
-CI runs format, lint, and tests in GitHub Actions on every PR and on `main` pushes.
-For the intended workflow, configure repository branch protection to require the `CI` check before merge.
+The `API` workflow runs format, lint, and tests in GitHub Actions on every PR and on `main` pushes.
+For the intended workflow, configure repository branch protection to require the `API / Format, lint, test` check before merge.
 
 ## Production Deployment (Manual)
 
 The default root `compose.yml` is used for both local and production-style manual deployment.
-GitHub Action CD is intentionally disabled for now.
+A separate manual `Build` workflow can publish the API image to GitHub Container Registry as `ghcr.io/<owner>/<repo>:latest`.
+The workflow derives the image name from the current repository, builds for `linux/arm64`, and pushes after a successful run.
+Because this repository is currently private, pulling the published image from other environments requires GitHub authentication with access to the package.
 
 Production required env injection values:
 
@@ -106,7 +108,7 @@ Production required env injection values:
 
 Optional production image override:
 
-- `API_IMAGE` (defaults to `survey-api:local` when not set)
+- `API_IMAGE` (defaults to `survey-api:local` when not set, or set it to the published GHCR image such as `ghcr.io/<owner>/<repo>:latest`)
 
 This production setup is intended for a college project demo: production-usable, but not enterprise-grade (for example, no automated secret rotation and no advanced compliance controls).
 
