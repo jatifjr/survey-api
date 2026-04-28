@@ -1,9 +1,10 @@
-name: API
+name: Quality
 
 on:
   pull_request:
   push:
     branches:
+      - devel
       - main
 
 jobs:
