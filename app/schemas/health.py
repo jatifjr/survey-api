@@ -1,16 +1,44 @@
 from datetime import UTC, datetime
+from enum import Enum
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
-ProbeStatus = Literal["ok", "error"]
-CheckState = Literal["up", "down"]
-ProbeType = Literal["liveness", "readiness"]
+
+class Status(Enum):
+    ok = "ok"
+    error = "error"
 
 
-class HealthResponse(BaseModel):
-    status: ProbeStatus
+class CheckStatus(Enum):
+    up = "up"
+    down = "down"
+
+
+class LivenessChecks(BaseModel):
+    app: CheckStatus
+
+
+class ReadinessChecks(BaseModel):
+    app: CheckStatus
+    database: CheckStatus
+
+
+def utc_timestamp_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+class LivenessResponse(BaseModel):
+    status: Status
     service: str
-    probe: ProbeType
-    checks: dict[str, CheckState]
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    probe: Literal["liveness"] = "liveness"
+    checks: LivenessChecks
+    timestamp: str = Field(default_factory=utc_timestamp_iso)
+
+
+class ReadinessResponse(BaseModel):
+    status: Status
+    service: str
+    probe: Literal["readiness"] = "readiness"
+    checks: ReadinessChecks
+    timestamp: str = Field(default_factory=utc_timestamp_iso)

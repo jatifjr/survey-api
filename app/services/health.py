@@ -1,25 +1,35 @@
 from app.db.session import ping_database
-from app.schemas.health import HealthResponse
+from app.schemas.health import (
+    CheckStatus,
+    LivenessChecks,
+    LivenessResponse,
+    ReadinessChecks,
+    ReadinessResponse,
+    Status,
+)
 
 
-def build_liveness(service_name: str) -> HealthResponse:
-    return HealthResponse(
-        status="ok",
+def liveness_service(service_name: str) -> LivenessResponse:
+    return LivenessResponse(
+        status=Status.ok,
         service=service_name,
-        probe="liveness",
-        checks={"app": "up"},
+        checks=LivenessChecks(app=CheckStatus.up),
     )
 
 
-async def build_readiness(service_name: str) -> tuple[HealthResponse, int]:
+async def readiness_service(service_name: str) -> tuple[ReadinessResponse, int]:
     db_is_up = await ping_database()
-    status_code = 200 if db_is_up else 503
-    status = "ok" if db_is_up else "error"
 
-    payload = HealthResponse(
+    status = Status.ok if db_is_up else Status.error
+    status_code = 200 if db_is_up else 503
+
+    payload = ReadinessResponse(
         status=status,
         service=service_name,
-        probe="readiness",
-        checks={"app": "up", "database": "up" if db_is_up else "down"},
+        checks=ReadinessChecks(
+            app=CheckStatus.up,
+            database=CheckStatus.up if db_is_up else CheckStatus.down,
+        ),
     )
+
     return payload, status_code

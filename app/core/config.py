@@ -13,7 +13,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    SERVICE_NAME: str = Field(default="SDKPT Survey API")
+    SERVICE_NAME: str = Field(default="FastAPI Service")
+    SERVICE_VERSION: str = Field(default="0.1.0")
     ENVIRONMENT: str = Field(default="production")
     POSTGRES_HOST: str | None = None
     POSTGRES_PORT: int | None = Field(default=5432, ge=1)

@@ -13,6 +13,7 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(
         title=settings.SERVICE_NAME,
+        version=settings.SERVICE_VERSION,
         docs_url=None if settings.is_production else "/docs",
         redoc_url=None if settings.is_production else "/redoc",
         openapi_url=None if settings.is_production else "/openapi.json",
