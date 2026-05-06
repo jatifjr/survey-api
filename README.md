@@ -94,9 +94,16 @@ For the intended workflow, configure repository branch protection to require the
 ## Production Deployment (Manual)
 
 The default root `compose.yml` is used for both local and production-style manual deployment.
-A `Build` workflow can publish the API image to GitHub Container Registry as `ghcr.io/<owner>/<repo>:latest` after merges to `main` (and also supports manual runs).
-The workflow derives the image name from the current repository, builds on an ARM runner, and pushes after a successful run.
-Because this repository is currently private, pulling the published image from other environments requires GitHub authentication with access to the package.
+
+**End-to-end guide:** [`docs/deployment.md`](docs/deployment.md) (GHCR auth, env vars, [`ops/deploy.sh`](ops/deploy.sh), [`ops/verify.sh`](ops/verify.sh), [`ops/rollback.sh`](ops/rollback.sh)).
+
+After merges to `main`, the **Build** workflow publishes the API image to GitHub Container Registry:
+
+- `ghcr.io/<owner>/<repo>:latest` — convenience tag
+- `ghcr.io/<owner>/<repo>:<short-sha>` — **immutable** tag for reproducible rollback (7-character SHA)
+- `ghcr.io/<owner>/<repo>:main-<short-sha>` — same commit with branch prefix
+
+The workflow builds on an ARM runner and uses repository-derived image names (lowercase). Private repositories require Docker login on the VM to pull images.
 
 Production required env injection values:
 
@@ -108,7 +115,7 @@ Production required env injection values:
 
 Optional production image override:
 
-- `API_IMAGE` (defaults to `survey-api:local` when not set, or set it to the published GHCR image such as `ghcr.io/<owner>/<repo>:latest`)
+- `API_IMAGE` (defaults to `survey-api:local` when not set; for GHCR use e.g. `ghcr.io/<owner>/<repo>:latest` or a pinned SHA tag)
 
 This production setup is intended for a college project demo: production-usable, but not enterprise-grade (for example, no automated secret rotation and no advanced compliance controls).
 
@@ -125,11 +132,17 @@ docker compose up -d --no-deps api
 docker compose up -d --scale api=1 --no-deps api
 ```
 
-Rollback:
+Rollback (pinned SHA recommended):
 
 ```bash
-API_IMAGE=<previous_tag> docker compose pull api
-API_IMAGE=<previous_tag> docker compose up -d --no-deps api
+./ops/rollback.sh ghcr.io/<owner>/<repo>:<previous-short-sha>
+```
+
+Or equivalently:
+
+```bash
+API_IMAGE=ghcr.io/<owner>/<repo>:<previous-short-sha> docker compose pull api
+API_IMAGE=ghcr.io/<owner>/<repo>:<previous-short-sha> docker compose up -d --no-deps api
 ```
 
 ## Optional VM Provisioning (Infra)
@@ -137,8 +150,12 @@ API_IMAGE=<previous_tag> docker compose up -d --no-deps api
 The `infra/` directory is an optional Terraform module for provisioning a VM when needed.
 
 - It is **not** part of the main app delivery path.
-- GitHub Actions runs infra checks in `.github/workflows/ci.infra.yml` (`fmt`, `validate`, `tflint`) when `infra/**` changes are detected.
+- GitHub Actions runs infra checks in [`.github/workflows/infra.yml`](.github/workflows/infra.yml) (`fmt`, `validate`, `tflint`) when `infra/**` changes are detected.
 - No `terraform apply` is executed in CI.
+
+## Optional SSH deploy from GitHub Actions
+
+If repository secrets are configured (`DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_KEY`, optional `DEPLOY_REMOTE_PATH`), you can trigger a remote deploy via [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) (**workflow_dispatch**). See [`docs/deployment.md`](docs/deployment.md).
 
 ## Tests
 

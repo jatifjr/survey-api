@@ -1,0 +1,42 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Registry tag (short SHA, latest, or main-<sha>)"
+        required: true
+        default: "latest"
+
+jobs:
+  deploy:
+    name: Deploy API on VM via SSH
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute GHCR image reference
+        id: image
+        env:
+          TAG: ${{ github.event.inputs.image_tag }}
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "ref=ghcr.io/${REPO_LOWER}:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Remote deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: API_IMAGE,DEPLOY_REMOTE_PATH
+          script_stop: true
+          script: |
+            set -euo pipefail
+            REMOTE="${DEPLOY_REMOTE_PATH:-${HOME}/survey-api}"
+            cd "${REMOTE}"
+            export API_IMAGE
+            docker compose pull api
+            docker compose up -d --no-deps api
+            BASE_URL=http://localhost:8000 ./ops/verify.sh
+        env:
+          API_IMAGE: ${{ steps.image.outputs.ref }}
+          DEPLOY_REMOTE_PATH: ${{ secrets.DEPLOY_REMOTE_PATH }}

@@ -36,3 +36,6 @@ ENV/
 
 # Runtime logs
 *.log
+
+# Local thesis probe logs (optional)
+ops/experiment-probes.csv

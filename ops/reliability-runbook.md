@@ -41,14 +41,13 @@ This runbook is used for evaluation scenarios in the skripsi.
 
 ## Scenario 3: Rollback
 
-1. Deploy a new image tag.
-2. If failure is observed, redeploy previous stable image tag:
-  - set `API_IMAGE=<previous_tag>`
-  - `docker compose pull`
-  - `docker compose up -d`
+1. Deploy a new image tag (see [`docs/deployment.md`](../docs/deployment.md)).
+2. If failure is observed, redeploy the previous stable immutable tag (short SHA):
+   - `./ops/rollback.sh ghcr.io/<owner>/<repo>:<previous-short-sha>`
+   - or set `API_IMAGE=<previous_full_ref>` then `docker compose pull api` and `docker compose up -d --no-deps api`
 3. Verify:
-  - `/v1/livez` returns `200`
-  - `/v1/readyz` matches DB state
+   - `/v1/livez` returns `200`
+   - `/v1/readyz` matches DB state (use `./ops/verify.sh` or curl)
 4. Record MTTR from failure detection to restored healthy status.
 
 ## Scenario 4: Rolling Update (Production, Minimal Downtime)
