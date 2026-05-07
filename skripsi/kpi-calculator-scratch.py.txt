@@ -1,0 +1,96 @@
+"""
+KPI calculator scratch file for skripsi BAB VII.
+
+How to use:
+1) Replace example values in USER INPUT section.
+2) Run:
+   python skripsi/kpi-calculator-scratch.py
+"""
+
+
+def pct_improvement_higher_better(baseline: float, after: float) -> float:
+    if baseline == 0:
+        return 0.0
+    return ((after - baseline) / baseline) * 100
+
+
+def pct_improvement_lower_better(baseline: float, after: float) -> float:
+    if baseline == 0:
+        return 0.0
+    return ((baseline - after) / baseline) * 100
+
+
+def availability_pct(total_time_minutes: float, downtime_minutes: float) -> float:
+    if total_time_minutes <= 0:
+        return 0.0
+    return ((total_time_minutes - downtime_minutes) / total_time_minutes) * 100
+
+
+def mttr_minutes(recovery_durations_minutes: list[float]) -> float:
+    if not recovery_durations_minutes:
+        return 0.0
+    return sum(recovery_durations_minutes) / len(recovery_durations_minutes)
+
+
+def main() -> None:
+    # ----------------------------
+    # USER INPUT (replace values)
+    # ----------------------------
+    availability_baseline = 96.20
+    availability_after = 99.10
+
+    mttr_baseline = 12.40
+    mttr_after = 4.10
+
+    deploy_baseline = 9.30
+    deploy_after = 3.80
+
+    rollback_baseline = 11.20
+    rollback_after = 4.60
+
+    ci_baseline = 72.00
+    ci_after = 91.00
+
+    success_baseline = 88.00
+    success_after = 98.00
+
+    # Optional raw calculations
+    total_window = 300.0
+    downtime = 6.0
+    recovery_samples = [4.0, 6.0, 5.0]
+
+    # ----------------------------
+    # OUTPUT
+    # ----------------------------
+    print("=== KPI Improvement ===")
+    print(
+        "Availability improvement (%):",
+        round(pct_improvement_higher_better(availability_baseline, availability_after), 2),
+    )
+    print(
+        "MTTR improvement (%):", round(pct_improvement_lower_better(mttr_baseline, mttr_after), 2)
+    )
+    print(
+        "Deployment duration improvement (%):",
+        round(pct_improvement_lower_better(deploy_baseline, deploy_after), 2),
+    )
+    print(
+        "Rollback recovery improvement (%):",
+        round(pct_improvement_lower_better(rollback_baseline, rollback_after), 2),
+    )
+    print(
+        "CI success rate improvement (%):",
+        round(pct_improvement_higher_better(ci_baseline, ci_after), 2),
+    )
+    print(
+        "Failure scenario success-rate improvement (%):",
+        round(pct_improvement_higher_better(success_baseline, success_after), 2),
+    )
+
+    print("\n=== Optional Raw Metrics ===")
+    print("Availability from raw window (%):", round(availability_pct(total_window, downtime), 2))
+    print("MTTR from recovery samples (minutes):", round(mttr_minutes(recovery_samples), 2))
+
+
+if __name__ == "__main__":
+    main()

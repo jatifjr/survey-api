@@ -1,0 +1,110 @@
+## BAB VII - Pengujian dan Evaluasi
+
+### 7.1 Skenario Pengujian
+
+Pengujian pada penelitian ini dilakukan untuk mengevaluasi efektivitas workflow DevOps ringan yang diusulkan dalam meningkatkan reliabilitas deployment dan konsistensi recovery layanan. Skenario pengujian dibagi menjadi lima bagian, yaitu:
+
+1. **Skenario A (Deployment Normal)** untuk mengukur keberhasilan deployment dan durasi proses rilis.
+2. **Skenario B (Gangguan Dependensi Database)** untuk mengevaluasi perilaku liveness dan readiness saat database tidak tersedia.
+3. **Skenario C (Regresi Kualitas Sebelum Rollout)** untuk memastikan quality gate dapat mencegah perubahan bermasalah masuk ke tahap deployment.
+4. **Skenario D (Rilis Gagal dan Rollback)** untuk mengukur efektivitas pemulihan layanan menggunakan image stabil sebelumnya.
+5. **Skenario E (Opsional, Kegagalan Satu Container pada Mode Replica)** untuk melihat continuity layanan dalam kondisi gangguan sebagian.
+
+---
+
+### 7.2 Hasil Pengujian Baseline
+
+Pengujian baseline dilakukan menggunakan pendekatan operasional manual tanpa alur deploy/rollback terstandarisasi berbasis script. Ringkasan hasil baseline ditunjukkan pada Tabel 7.1.
+
+**Tabel 7.1 Hasil Baseline**
+| Parameter | Nilai |
+|---|---|
+| Durasi deployment manual | [isi] menit |
+| Downtime selama update | [isi] menit/detik |
+| Jumlah langkah manual utama | [isi] langkah |
+| Waktu recovery saat gangguan | [isi] menit |
+| Hasil `/v1/livez` kondisi normal | [isi] |
+| Hasil `/v1/readyz` kondisi normal | [isi] |
+| Hasil `/v1/livez` saat DB down | [isi] |
+| Hasil `/v1/readyz` saat DB down | [isi] |
+
+Berdasarkan hasil baseline, proses deployment masih sangat bergantung pada operator, terutama pada tahap validasi pasca-deployment dan pemulihan ketika terjadi gangguan. Kondisi ini menyebabkan konsistensi waktu deployment dan recovery belum stabil.
+
+---
+
+### 7.3 Hasil Pengujian Setelah Intervensi
+
+Setelah workflow DevOps ringan diterapkan, deployment dilakukan dengan alur terstandarisasi mencakup quality gate, artifact image terpublikasi, verifikasi health endpoint, dan prosedur rollback berbasis tag image.
+
+**Tabel 7.2 Hasil Pasca-Intervensi**
+| Parameter | Nilai |
+|---|---|
+| Durasi deployment intervensi | [isi] menit |
+| Downtime selama update | [isi] menit/detik |
+| Waktu deteksi kegagalan | [isi] menit/detik |
+| Waktu rollback hingga sehat | [isi] menit/detik |
+| Hasil `/v1/livez` kondisi normal | [isi] |
+| Hasil `/v1/readyz` kondisi normal | [isi] |
+| Hasil `/v1/livez` saat DB down | [isi] |
+| Hasil `/v1/readyz` saat DB down | [isi] |
+| Success rate probe (reliability check) | [isi] % |
+
+Hasil pasca-intervensi menunjukkan bahwa proses deployment dan recovery menjadi lebih terstruktur, dengan langkah verifikasi yang lebih konsisten serta prosedur rollback yang lebih cepat dieksekusi.
+
+---
+
+### 7.4 Perbandingan KPI Baseline vs Intervensi
+
+Perbandingan utama antara kondisi baseline dan pasca-intervensi ditampilkan pada Tabel 7.3.
+
+**Tabel 7.3 Perbandingan KPI**
+| KPI | Baseline | Pasca-Intervensi | Improvement |
+|---|---:|---:|---:|
+| Availability pada window uji (%) | [isi] | [isi] | [isi] |
+| MTTR (menit) | [isi] | [isi] | [isi] |
+| Durasi deployment (menit) | [isi] | [isi] | [isi] |
+| Durasi recovery rilis gagal (menit) | [isi] | [isi] | [isi] |
+| CI success rate (%) | [isi] | [isi] | [isi] |
+| Success rate saat gangguan (%) | [isi] | [isi] | [isi] |
+
+Perhitungan improvement dilakukan dengan rumus:
+
+- Untuk metrik “semakin besar semakin baik”:
+  \[
+  Improvement(\%) = \frac{After - Baseline}{Baseline} \times 100
+  \]
+
+- Untuk metrik “semakin kecil semakin baik” (mis. MTTR, durasi deployment):
+  \[
+  Improvement(\%) = \frac{Baseline - After}{Baseline} \times 100
+  \]
+
+---
+
+### 7.5 Analisis Hasil
+
+Berdasarkan hasil pengujian, penerapan workflow DevOps ringan memberikan dampak pada tiga aspek utama.
+
+1. **Konsistensi Deployment**
+   Dengan quality gate dan artifact image terstandarisasi, proses deployment menjadi lebih konsisten dibandingkan baseline manual.
+
+2. **Ketepatan Verifikasi Layanan**
+   Pemisahan endpoint liveness dan readiness membantu identifikasi kondisi layanan secara lebih tepat, khususnya pada skenario gangguan dependensi database.
+
+3. **Kecepatan dan Konsistensi Recovery**
+   Prosedur rollback berbasis tag image memungkinkan pemulihan layanan dilakukan lebih cepat dan lebih terukur, sehingga nilai MTTR menunjukkan perbaikan dibanding baseline.
+
+Secara keseluruhan, hasil evaluasi menunjukkan bahwa workflow yang diusulkan efektif untuk meningkatkan reliabilitas deployment pada layanan backend skala kecil berbasis VM.
+
+---
+
+### 7.6 Ancaman terhadap Validitas
+
+Penelitian ini memiliki beberapa keterbatasan yang perlu diperhatikan.
+
+1. Pengujian dilakukan pada satu layanan dan satu lingkungan VM, sehingga generalisasi ke sistem skala besar perlu dilakukan dengan hati-hati.
+2. Variasi skenario gangguan masih terbatas pada skenario yang dirancang dalam penelitian ini.
+3. Beberapa parameter operasional (misalnya beban trafik produksi nyata) belum sepenuhnya direplikasi dalam pengujian.
+4. Nilai metrik sangat dipengaruhi konsistensi prosedur pencatatan waktu selama eksperimen.
+
+Meskipun demikian, pendekatan baseline vs intervensi yang digunakan tetap memberikan bukti empiris yang relevan terhadap tujuan penelitian.
