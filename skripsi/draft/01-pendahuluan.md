@@ -6,7 +6,7 @@ Draft awal dengan isi yang sudah dapat dikembangkan menjadi versi penulisan form
 
 ## Judul Penelitian
 
-**Perancangan dan Evaluasi Workflow DevOps Ringan untuk Meningkatkan Reliabilitas Deployment Layanan FastAPI pada VM Berbasis Docker**
+**Perancangan dan Evaluasi Workflow DevOps Ringan untuk Meningkatkan Reliabilitas Layanan FastAPI pada Deployment Berbasis Docker**
 
 ## 1.1 Latar Belakang
 
@@ -67,4 +67,3 @@ Penelitian ini menggunakan layanan FastAPI sebagai objek kajian. Layanan dijalan
 - sesuaikan latar belakang dengan gaya bahasa kampus
 - tambahkan konteks organisasi atau proyek jika perlu
 - pastikan istilah asing mengikuti aturan penulisan kampus
-
